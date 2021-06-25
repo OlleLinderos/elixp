@@ -1,18 +1,33 @@
 defmodule Elixp do
-  @moduledoc """
-  Documentation for `Elixp`.
-  """
+  @typedoc """
+   This is supposed to represent an Atom,
+   but that's already a thing in Elixir.
+   """
+  @type unit :: charlist | integer | float
+
+  def toChars(str) do
+    String.graphemes(str)
+  end
+
+  def is_numeric(str) do
+    case Float.parse(str) do
+      {_num, ""} -> true
+      _          -> false
+    end
+  end
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Elixp.hello()
-      :world
-
+  Lets go with floats only for now, will likely come back to this
   """
-  def hello do
-    :world
+  def parseUnit(str) do
+    unit = String.trim(str)
+    if is_numeric(unit) do
+      {float, _} = Float.parse(unit)
+      float
+    else
+      unit
+    end
   end
-end
+
+
+ end
