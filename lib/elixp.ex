@@ -30,18 +30,35 @@ defmodule Elixp do
     end
   end
 
-  @delimiters %{"open" => "(", "close" => ")"}
+  @delimiters %{:open => "(", :close => ")"}
 
-  def parseListActual(str, i) do
-    result = %AList{items: []}
-    elements = String.graphemes(str)
+
+  def parseListActual(elements, n) when n <= 1 do
+    IO.puts "we're done here"
   end
-  
+
+  def parseListActual(elements, n) do
+    result = %AList{items: []}
+
+    if String.at(elements, n) == @delimiters[:close] do
+      result
+    end
+    if String.at(elements, n) == @delimiters[:open] do
+      r = parseListActual(elements, n + 1)
+      Map.put(result, :items [r])
+    end
+    
+    parseListActual(elements, n - 1)
+  end
+
   def parseList(str) do
     if String.length(str) == 0, do: raise "Invalid string"
     list = String.trim(str)
     if String.at(list, 0) != "(", do: raise "Missing opening parens"
 
-    %AList{items: []}
+    elements = String.graphemes(list)
+    result = parseListActual(list, length(elements))
+
+    result
   end
  end
