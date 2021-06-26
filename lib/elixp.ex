@@ -1,14 +1,22 @@
 defmodule AList do
+  @enforce_keys [:items]
   defstruct [:items]
+
+  @type t() :: %__MODULE__{
+    items: AAtom | AList
+  }
+end
+
+defmodule AAtom do
+  @enforce_keys [:value]
+  defstruct [:value]
+
+  @type t() :: %__MODULE__{
+    value: String.t() | float()
+  }
 end
 
 defmodule Elixp do
-  @typedoc """
-   This is supposed to represent an Atom,
-   but that's already a thing in Elixir.
-   """
-  @type aAtom :: charlist | integer | float
-
   def is_numeric(str) do
     case Float.parse(str) do
       {_num, ""} -> true
@@ -20,45 +28,56 @@ defmodule Elixp do
   Lets go with floats only for now, will likely come back to this
   """
   def parseAtom(str) do
+    if String.length(str) == 0, do: raise "Invalid string"
     atom = String.trim(str)
-    if String.length(atom) == 0, do: raise "Invalid string"
     if is_numeric(atom) do
       {float, _} = Float.parse(atom)  
-      float
+      %AAtom{value: float}
     else
-      atom
+      %AAtom{value: atom}
     end
   end
 
-  @delimiters %{:open => "(", :close => ")"}
+  @delimiters %{:open => "(", :close => ")", :separator => " "}
 
+  # def parseListActual(acc, result, elements, i, n) when i == n, do: result
+  # def parseListActual(acc, result, elements, i, n) do
+  #   # This should be the end
+  #   if String.at(elements, i) == @delimiters[:close] do
+  #     IO.puts "exit"
+  #     IO.puts result
+  #   end
 
-  def parseListActual(elements, n) when n <= 1 do
-    IO.puts "we're done here"
-  end
+  #   # This is the start
+  #   if String.at(elements, i) == @delimiters[:open] do
+  #     IO.puts "enter"
+  #     parseListActual(acc, result, elements, i + 1, n)
+  #   end
 
-  def parseListActual(elements, n) do
-    result = %AList{items: []}
+  #   if String.at(elements, i) != @delimiters[:separator] do
+  #     newAcc = [acc | [String.at(elements, i)]]
+  #     parseListActual(newAcc, result, elements, i + 1, n)
+  #   end
 
-    if String.at(elements, n) == @delimiters[:close] do
-      result
-    end
-    if String.at(elements, n) == @delimiters[:open] do
-      r = parseListActual(elements, n + 1)
-      Map.put(result, :items [r])
-    end
-    
-    parseListActual(elements, n - 1)
-  end
+  #   if String.at(elements, i) == @delimiters[:separator] do
+  #     newResult = [[Enum.join(acc)] | result]
+  #     IO.puts newResult
+  #     parseListActual([], newResult, elements, i + 1, n)
+  #   end
+  # end
 
   def parseList(str) do
     if String.length(str) == 0, do: raise "Invalid string"
+
     list = String.trim(str)
     if String.at(list, 0) != "(", do: raise "Missing opening parens"
+    if String.at(list, String.length(list) - 1) != ")", do: raise "Missing closing parens"
 
-    elements = String.graphemes(list)
-    result = parseListActual(list, length(elements))
+    atoms = list
+    |> String.slice(1..String.length(list) - 2)
+    |> String.split()
+    |> Enum.map(fn x -> parseAtom(x) end)
 
-    result
+    %AList{items: atoms} 
   end
- end
+end
