@@ -4,10 +4,6 @@ defmodule ElixpTest do
   import ExpectFailure
   import AList
 
-  test "returns a list of chars" do
-    assert Elixp.toChars("hello") == ["h", "e", "l", "l", "o"]
-  end
-
   test "returns a float" do
     assert Elixp.parseAtom("123.2") == 123.2
     assert Elixp.parseAtom("123") == 123

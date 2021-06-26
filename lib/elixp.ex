@@ -9,10 +9,6 @@ defmodule Elixp do
    """
   @type aAtom :: charlist | integer | float
 
-  def toChars(str) do
-    String.graphemes(str)
-  end
-
   def is_numeric(str) do
     case Float.parse(str) do
       {_num, ""} -> true
@@ -36,6 +32,11 @@ defmodule Elixp do
 
   @delimiters %{"open" => "(", "close" => ")"}
 
+  def parseListActual(str, i) do
+    result = %AList{items: []}
+    elements = String.graphemes(str)
+  end
+  
   def parseList(str) do
     if String.length(str) == 0, do: raise "Invalid string"
     list = String.trim(str)
