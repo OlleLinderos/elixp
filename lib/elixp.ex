@@ -40,32 +40,6 @@ defmodule Elixp do
 
   @delimiters %{:open => "(", :close => ")", :separator => " "}
 
-  # def parseListActual(acc, result, elements, i, n) when i == n, do: result
-  # def parseListActual(acc, result, elements, i, n) do
-  #   # This should be the end
-  #   if String.at(elements, i) == @delimiters[:close] do
-  #     IO.puts "exit"
-  #     IO.puts result
-  #   end
-
-  #   # This is the start
-  #   if String.at(elements, i) == @delimiters[:open] do
-  #     IO.puts "enter"
-  #     parseListActual(acc, result, elements, i + 1, n)
-  #   end
-
-  #   if String.at(elements, i) != @delimiters[:separator] do
-  #     newAcc = [acc | [String.at(elements, i)]]
-  #     parseListActual(newAcc, result, elements, i + 1, n)
-  #   end
-
-  #   if String.at(elements, i) == @delimiters[:separator] do
-  #     newResult = [[Enum.join(acc)] | result]
-  #     IO.puts newResult
-  #     parseListActual([], newResult, elements, i + 1, n)
-  #   end
-  # end
-
   def parseList(str) do
     if String.length(str) == 0, do: raise "Invalid string"
 
