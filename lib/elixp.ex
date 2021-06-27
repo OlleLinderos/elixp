@@ -1,21 +1,3 @@
-defmodule EList do
-  @enforce_keys [:items]
-  defstruct [:items]
-
-  @type t() :: %__MODULE__{
-    items: AAtom | AList
-  }
-end
-
-defmodule EAtom do
-  @enforce_keys [:value]
-  defstruct [:value]
-
-  @type t() :: %__MODULE__{
-    value: String.t() | float()
-  }
-end
-
 defmodule Elixp do
   def is_numeric(str) do
     case Float.parse(str) do
@@ -29,59 +11,63 @@ defmodule Elixp do
   """
   def parseAtom(str) do
     if String.length(str) == 0, do: raise "Invalid string"
-    atom = String.trim(str)
-    if is_numeric(atom) do
-      {float, _} = Float.parse(atom)  
-      %EAtom{value: float}
+    s = String.trim(str)
+    if is_numeric(s) do
+      {float, _} = Float.parse(s)  
+      float
     else
-      %EAtom{value: atom}
+      s
     end
   end
 
-  @delimiters %{:open => "(", :close => ")", :quote => "'"}
 
-  def subParse(["(" | xs]) do
+  def parseListInitial(["(" | xs]) do
     parseList([], xs)
   end
 
-  def subParse(["'" | xs]) do
-    {y, ys} = subParse(xs)
+  def parseListInitial(["'" | xs]) do
+    {y, ys} = parseListInitial(xs)
     [["quote", y] | ys]
   end
   
-  def subParse([x | xs]) do
+  def parseListInitial([x | xs]) do
     [x, xs]
   end
 
+
   def parseList(acc, [")" | xs]) do
+    IO.puts acc
+    IO.puts xs
     [Enum.reverse(acc), xs]
   end
 
   def parseList(acc, ["(" | xs]) do
-    {y, ys} = subParse([], xs)
+    {y, ys} = parseList([], xs)
     parseList([y | acc], ys)
   end 
 
   def parseList(acc, [x | xs]) do
     parseList([x | acc], xs)
   end 
+
   
-  def prepareList(str) do
+  def parseInput(str) do
+    s = String.trim(str)
     if String.length(str) == 0, do: raise "Invalid string"
+    if String.at(s, 0) != "(", do: raise "Missing opening parens"
+    if String.at(s, String.length(s) - 1) != ")", do: raise "Missing closing parens"
 
-    # list = String.trim(str)
-    # if String.at(list, 0) != "(", do: raise "Missing opening parens"
-    # if String.at(list, String.length(list) - 1) != ")", do: raise "Missing closing parens"
-
-    list = str
-    |> String.trim()
+    s
     |> String.replace("(", " ( ")
     |> String.replace(")", " ) ")
     |> String.replace("'", " ' ")
     |> String.split()
+  end
 
-    {x, xs} = subParse(list)
-
-    parseList(x, xs)
+  def parse(str) do
+    str
+    |> parseInput
+    |> parseListInitial
+    # |> List.first()
   end
 end

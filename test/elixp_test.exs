@@ -14,48 +14,33 @@ defmodule ElixpTest do
     assert Elixp.parseAtom("a_sd").value == "a_sd"
   end
 
-  test "will raise runtimeError" do
-    expect_failure(Elixp.parseList(""))
-  end
-
-  test "should throw if opening parens is missing" do
-    expect_failure(Elixp.parseList("asd"))
-  end
-
-  test "should throw if closing parens is missing" do
-    expect_failure(Elixp.parseList("(asd"))
-  end
-
-  test "returns an empty AList if empty expression" do
-    assert Elixp.parseList("()") == %EList{items: []}
-  end
-
-  test "returns a AList with number AAtom" do
-    assert Elixp.parseList("(123)") == %EList{
-      items: [%EAtom{value: 123.0}]
-    }
+  test "returns a list with a number" do
+    assert Elixp.parseList("(123)") == [123.0]
   end
 
   test "returns a AList with string AAtom" do
-    assert Elixp.parseList("(a)") == %EList{
-      items: [%EAtom{value: "a"}]
-    }
-  end
+    assert Elixp.parseList("(a)") == ["a"] end
 
   test "returns a AList with multiple AAtoms" do
-    assert Elixp.parseList("(a-bc 123 0 bb)") == %EList{
-      items: [%EAtom{value: "a-bc"},
-              %EAtom{value: 123.0},
-              %EAtom{value: 0.0},
-              %EAtom{value: "bb"}]
-    }
-  end
+    assert Elixp.parseList("(a-bc 123 0 bb)") == ["a-bc", 123.0, 0.0, "bb"] end
 
   test "returns an empty nested list" do
-    assert Elixp.parseList("(ok ())") == %EList{
-       items: [%EAtom{value: "ok"},
-               %EList{items: []}]
-    }
+    assert Elixp.parseList("(ok ())") == ["ok", []]
   end
 
+  test "will raise runtimeError" do
+    expect_failure(Elixp.parseInput(""))
+  end
+
+  test "should throw if opening parens is missing" do
+    expect_failure(Elixp.parseInput("asd"))
+  end
+
+  test "should throw if closing parens is missing" do
+    expect_failure(Elixp.parseInput("(asd"))
+  end
+
+  test "returns an empty list if empty expression" do
+    assert Elixp.parseInput("()") == []
+  end
 end
