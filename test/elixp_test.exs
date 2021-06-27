@@ -2,7 +2,6 @@ defmodule ElixpTest do
   use ExUnit.Case
   doctest Elixp
   import ExpectFailure
-  import AList
 
   test "returns a float" do
     assert Elixp.parseAtom("123.2").value == 123.2
@@ -28,27 +27,34 @@ defmodule ElixpTest do
   end
 
   test "returns an empty AList if empty expression" do
-    assert Elixp.parseList("()") == %AList{items: []}
+    assert Elixp.parseList("()") == %EList{items: []}
   end
 
   test "returns a AList with number AAtom" do
-    assert Elixp.parseList("(123)") == %AList{
-      items: [%AAtom{value: 123.0}]
+    assert Elixp.parseList("(123)") == %EList{
+      items: [%EAtom{value: 123.0}]
     }
   end
 
   test "returns a AList with string AAtom" do
-    assert Elixp.parseList("(a)") == %AList{
-      items: [%AAtom{value: "a"}]
+    assert Elixp.parseList("(a)") == %EList{
+      items: [%EAtom{value: "a"}]
     }
   end
 
   test "returns a AList with multiple AAtoms" do
-    assert Elixp.parseList("(a-bc 123 0 bb)") == %AList{
-      items: [%AAtom{value: "a-bc"},
-              %AAtom{value: 123.0},
-              %AAtom{value: 0.0},
-              %AAtom{value: "bb"}]
+    assert Elixp.parseList("(a-bc 123 0 bb)") == %EList{
+      items: [%EAtom{value: "a-bc"},
+              %EAtom{value: 123.0},
+              %EAtom{value: 0.0},
+              %EAtom{value: "bb"}]
+    }
+  end
+
+  test "returns an empty nested list" do
+    assert Elixp.parseList("(ok ())") == %EList{
+       items: [%EAtom{value: "ok"},
+               %EList{items: []}]
     }
   end
 

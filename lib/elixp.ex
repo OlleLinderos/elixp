@@ -1,4 +1,4 @@
-defmodule AList do
+defmodule EList do
   @enforce_keys [:items]
   defstruct [:items]
 
@@ -7,7 +7,7 @@ defmodule AList do
   }
 end
 
-defmodule AAtom do
+defmodule EAtom do
   @enforce_keys [:value]
   defstruct [:value]
 
@@ -32,26 +32,54 @@ defmodule Elixp do
     atom = String.trim(str)
     if is_numeric(atom) do
       {float, _} = Float.parse(atom)  
-      %AAtom{value: float}
+      %EAtom{value: float}
     else
-      %AAtom{value: atom}
+      %EAtom{value: atom}
     end
   end
 
-  @delimiters %{:open => "(", :close => ")", :separator => " "}
+  @delimiters %{:open => "(", :close => ")", :quote => "'"}
 
-  def parseList(str) do
+  # TODO: Deal with quote
+  def subParse([x | xs]) do
+    case x do
+      "(" ->
+        parseList([], xs)
+
+      _ ->
+        [x, xs]
+    end
+  end
+
+  def parseList(acc, tokens) do
+    {x, xs} = subParse(tokens)
+
+    case x do
+      ")" ->
+        [Enum.reverse(x), xs]
+           
+      "(" ->
+        {y, ys} = parseList([], xs)
+        parseList([y, x | ys])
+        
+      _ ->
+        parseList([x | acc], xs)
+    end
+  end
+  
+  def prepareList(str) do
     if String.length(str) == 0, do: raise "Invalid string"
 
-    list = String.trim(str)
-    if String.at(list, 0) != "(", do: raise "Missing opening parens"
-    if String.at(list, String.length(list) - 1) != ")", do: raise "Missing closing parens"
+    # list = String.trim(str)
+    # if String.at(list, 0) != "(", do: raise "Missing opening parens"
+    # if String.at(list, String.length(list) - 1) != ")", do: raise "Missing closing parens"
 
-    atoms = list
-    |> String.slice(1..String.length(list) - 2)
+    str
+    |> String.trim(str)
+    |> String.replace("(", " ( ")
+    |> String.replace(")", " ) ")
+    |> String.replace("'", " ' ")
     |> String.split()
-    |> Enum.map(fn x -> parseAtom(x) end)
-
-    %AList{items: atoms} 
+    |> parseList()
   end
 end
