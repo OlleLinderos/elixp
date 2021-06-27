@@ -40,31 +40,25 @@ defmodule Elixp do
 
   @delimiters %{:open => "(", :close => ")", :quote => "'"}
 
-  # TODO: Deal with quote
-  def subParse([x | xs]) do
-    case x do
-      "(" ->
-        parseList([], xs)
-
-      _ ->
-        [x, xs]
-    end
+  def parseList(acc, [")" | xs]) do
+    [Enum.reverse(acc), xs]
   end
 
-  def parseList(acc, tokens) do
-    {x, xs} = subParse(tokens)
+  def parseList(acc, [")" | xs]) do
+    {y, ys} = parseList([], xs)
+    parseList([y | acc], ys)
+  end 
 
-    case x do
-      ")" ->
-        [Enum.reverse(x), xs]
-           
-      "(" ->
-        {y, ys} = parseList([], xs)
-        parseList([y, x | ys])
-        
-      _ ->
-        parseList([x | acc], xs)
-    end
+  def parseList(acc, [x | xs]) do
+    parseList([x | acc], xs)
+  end 
+
+  def subParse(["(" | xs]) do
+    parseList([], xs)
+  end
+  
+  def subParse([x | xs]) do
+    [x, xs]
   end
   
   def prepareList(str) do
@@ -74,12 +68,17 @@ defmodule Elixp do
     # if String.at(list, 0) != "(", do: raise "Missing opening parens"
     # if String.at(list, String.length(list) - 1) != ")", do: raise "Missing closing parens"
 
-    str
+    {x, xs} = str
     |> String.trim(str)
     |> String.replace("(", " ( ")
     |> String.replace(")", " ) ")
     |> String.replace("'", " ' ")
     |> String.split()
-    |> parseList()
+    |> subParse()
+    |> case do
+         {x, xs} -> {x, xs}
+       end
+
+    parseList(x, xs)
   end
 end
