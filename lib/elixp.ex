@@ -20,26 +20,17 @@ defmodule Elixp do
     end
   end
 
-
   def parseListInitial(["(" | xs]) do
     parseList([], xs)
   end
-
-  def parseListInitial(["'" | xs]) do
-    {y, ys} = parseListInitial(xs)
-    [["quote", y] | ys]
-  end
   
-  def parseListInitial([x | xs]) do
-    [x, xs]
-  end
-
-
   def parseList(acc, [")" | xs]) do
-    IO.puts acc
-    IO.puts xs
-    [Enum.reverse(acc), xs]
+    {Enum.reverse(acc), xs}
   end
+
+  def parseList(acc, ["'" | xs]) do
+    parseList(acc, ["quote" | xs])
+  end 
 
   def parseList(acc, ["(" | xs]) do
     {y, ys} = parseList([], xs)
@@ -47,9 +38,8 @@ defmodule Elixp do
   end 
 
   def parseList(acc, [x | xs]) do
-    parseList([x | acc], xs)
+    parseList([parseAtom(x) | acc], xs)
   end 
-
   
   def parseInput(str) do
     s = String.trim(str)
@@ -65,9 +55,11 @@ defmodule Elixp do
   end
 
   def parse(str) do
-    str
+    {x, _} = str
     |> parseInput
     |> parseListInitial
     # |> List.first()
+
+    x
   end
 end

@@ -4,28 +4,28 @@ defmodule ElixpTest do
   import ExpectFailure
 
   test "returns a float" do
-    assert Elixp.parseAtom("123.2").value == 123.2
-    assert Elixp.parseAtom("123").value == 123
+    assert Elixp.parseAtom("123.2") == 123.2
+    assert Elixp.parseAtom("123") == 123
   end
 
   test "returns a string" do
-    assert Elixp.parseAtom(" asd ").value == "asd"
-    assert Elixp.parseAtom("a-sd").value == "a-sd"
-    assert Elixp.parseAtom("a_sd").value == "a_sd"
+    assert Elixp.parseAtom(" asd ") == "asd"
+    assert Elixp.parseAtom("a-sd") == "a-sd"
+    assert Elixp.parseAtom("a_sd") == "a_sd"
   end
 
   test "returns a list with a number" do
-    assert Elixp.parseList("(123)") == [123.0]
+    assert Elixp.parse("(123)") == [123.0]
   end
 
-  test "returns a AList with string AAtom" do
-    assert Elixp.parseList("(a)") == ["a"] end
+  test "returns a list with string" do
+    assert Elixp.parse("(a)") == ["a"] end
 
-  test "returns a AList with multiple AAtoms" do
-    assert Elixp.parseList("(a-bc 123 0 bb)") == ["a-bc", 123.0, 0.0, "bb"] end
+  test "returns a list with multiple atoms" do
+    assert Elixp.parse("(a-bc 123 0 bb)") == ["a-bc", 123.0, 0.0, "bb"] end
 
   test "returns an empty nested list" do
-    assert Elixp.parseList("(ok ())") == ["ok", []]
+    assert Elixp.parse("(ok ())") == ["ok", []]
   end
 
   test "will raise runtimeError" do
@@ -41,6 +41,10 @@ defmodule ElixpTest do
   end
 
   test "returns an empty list if empty expression" do
-    assert Elixp.parseInput("()") == []
+    assert Elixp.parse("()") == []
+  end
+
+  test "returns a list as 'quote'" do
+    assert Elixp.parse("(abc '(test 123))") == ["abc", ["quote", 123.0]]
   end
 end
