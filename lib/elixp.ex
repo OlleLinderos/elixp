@@ -1,35 +1,32 @@
 defmodule Elixp do
-  def is_numeric(str) do
-    case Float.parse(str) do
-      {_num, ""} -> true
-      _          -> false
-    end
-  end
-
-  @doc """
-  Lets go with floats only for now, will likely come back to this
+  @moduledoc """
   """
+
   def parseAtom(str) do
     if String.length(str) == 0, do: raise "Invalid string"
     s = String.trim(str)
-    if is_numeric(s) do
-      {float, _} = Float.parse(s)  
-      float
-    else
-      s
+
+    case Integer.parse(s) do
+      {int, ""} -> int
+      _        ->
+        case Float.parse(s) do
+          {float, ""} -> float
+          _ -> s
+        end
     end
   end
 
   def parseListInitial(["(" | xs]) do
     parseList([], xs)
   end
-  
+
   def parseList(acc, [")" | xs]) do
     {Enum.reverse(acc), xs}
   end
 
   def parseList(acc, ["'" | xs]) do
-    parseList(acc, ["quote" | xs])
+    {y, _} = parseList([], xs)
+    parseList(acc, [["quote" | y]])
   end 
 
   def parseList(acc, ["(" | xs]) do
@@ -37,10 +34,15 @@ defmodule Elixp do
     parseList([y | acc], ys)
   end 
 
+  # def parseList(acc, [x | xs]) when is_map(x) do
+  #   {y, ys} = parseList(x, xs)
+  #   parseList(acc, [y | ys])
+  # end 
+
   def parseList(acc, [x | xs]) do
     parseList([parseAtom(x) | acc], xs)
   end 
-  
+
   def parseInput(str) do
     s = String.trim(str)
     if String.length(str) == 0, do: raise "Invalid string"
@@ -55,11 +57,9 @@ defmodule Elixp do
   end
 
   def parse(str) do
-    {x, _} = str
+    {result, _} = str
     |> parseInput
     |> parseListInitial
-    # |> List.first()
-
-    x
+    result
   end
 end

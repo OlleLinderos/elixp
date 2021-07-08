@@ -19,16 +19,19 @@ defmodule ElixpTest do
   end
 
   test "returns a list with string" do
-    assert Elixp.parse("(a)") == ["a"] end
+    assert Elixp.parse("(a)") == ["a"]
+  end
 
   test "returns a list with multiple atoms" do
-    assert Elixp.parse("(a-bc 123 0 bb)") == ["a-bc", 123.0, 0.0, "bb"] end
+    assert Elixp.parse("(a-bc 123 0 bb)")
+    == ["a-bc", 123.0, 0.0, "bb"]
+  end
 
   test "returns an empty nested list" do
     assert Elixp.parse("(ok ())") == ["ok", []]
   end
 
-  test "will raise runtimeError" do
+  test "will raise runtimeError if empty input" do
     expect_failure(Elixp.parseInput(""))
   end
 
@@ -45,6 +48,7 @@ defmodule ElixpTest do
   end
 
   test "returns a list as 'quote'" do
-    assert Elixp.parse("(abc '(test 123))") == ["abc", ["quote", 123.0]]
+    assert Elixp.parse("(abc '(test 123))")
+    == ["abc", ["quote", "test", 123.0]]
   end
 end
