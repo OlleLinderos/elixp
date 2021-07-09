@@ -41,8 +41,8 @@ defmodule Elixp do
   def parseInput(str) do
     s = String.trim(str)
 
-    if String.length(str) == 0,
-      do: raise "Invalid string"
+    if String.length(s) == 0,
+      do: raise "Invalid input"
     if String.at(s, 0) != "(",
       do: raise "Missing opening parens"
     if String.at(s, String.length(s) - 1) != ")",
