@@ -13,31 +13,32 @@ defmodule Elixp do
     end
   end
 
-  def parseListInitial(["(" | xs]) do
+  # Parsing begins here
+  def parseList(["(" | xs]) do
     parseList([], xs)
   end
 
-  # This is where the parsing ends
+  # Parsing ends here
   def parseList(acc, [")" | xs]) do
     {Enum.reverse(acc), xs}
   end
 
-  # Transform '(abc def) into ["quote", "abc", "def"]
+  # Create a new subtree where '(abc def) transforms into ["quote", "abc", "def"]
   def parseList(acc, ["'" | xs]) do
-    {y, ys} = parseList([], xs)
-    parseList([["quote" | List.flatten(y)], acc], ys)
+    {y, ys} = parseList([], List.delete_at(xs, 0))
+    parseList([["quote" | y] | acc], ys)
   end 
-
+ 
   # Create a new subtree
   def parseList(acc, ["(" | xs]) do
     {y, ys} = parseList([], xs)
     parseList([y | acc], ys)
-  end 
-  
+  end
+
   def parseList(acc, [x | xs]) do
     parseList([parseAtom(x) | acc], xs)
   end 
-  
+
   def parseInput(str) do
     s = String.trim(str)
 
@@ -60,7 +61,7 @@ defmodule Elixp do
   def parse(str) do
     {result, _} = str
     |> parseInput
-    |> parseListInitial
+    |> parseList
     result
   end
 end

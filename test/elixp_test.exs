@@ -42,20 +42,24 @@ defmodule ElixpTest do
     assert Elixp.parse("()") == []
   end
 
-  test "returns a list as 'quote'" do
+  test "should return a containing a 'quote' list" do
     assert Elixp.parse("(abc '(test 123))") == ["abc", ["quote", "test", 123]]
   end
 
+  test "should return a containing a 'quote' list with nested lists" do
+    assert Elixp.parse("(abc '(test 123 (5 6)))") == ["abc", ["quote", "test", 123, [5, 6]]]
+  end
+
   
-  test "will raise runtimeError if empty input" do
+  test "should raise an exception if input is empty" do
     expect_failure(Elixp.parseInput(""))
   end
 
-  test "should throw if opening parens is missing" do
+  test "should raise an exception if opening parens is missing" do
     expect_failure(Elixp.parseInput("asd"))
   end
 
-  test "should throw if closing parens is missing" do
+  test "should raise an exception if closing parens is missing" do
     expect_failure(Elixp.parseInput("(asd"))
   end
 end
