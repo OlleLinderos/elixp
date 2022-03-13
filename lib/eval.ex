@@ -35,6 +35,7 @@ defmodule Eval do
   def eval([x | xs]) do
     case x do
       "+" -> Enum.sum(xs)
+      _ -> raise "x is not a valid operator"
     end
   end
 
@@ -43,12 +44,16 @@ defmodule Eval do
   Traverse list until we get to a list where none of its elements is a list, in which
   case we evaluate it.
   """
-  def processList([x | [_|_] = xs]) do
-    [x | processList(xs)]
+  def processList([[_|_] = x | [_|_] = xs]) do
+    [eval(processList(x)) | processList(xs)]
   end
 
-  def processList([x]) when is_list(x) do
-    [eval(processList(x))]
+  def processList([x | xs]) when is_list(x) do
+    [eval(processList(x)) | xs]
+  end
+  
+  def processList([x | [_|_] = xs]) do
+    [x | processList(xs)]
   end
 
   # Deepest list
