@@ -28,11 +28,11 @@ defmodule Eval do
   Source: Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
   """
 
-  def eval(x) do
-    processList(x)
+  def init(x) do
+    eval(processList(x))
   end
 
-  def actuallyEval([x | xs]) do
+  def eval([x | xs]) do
     case x do
       "+" -> Enum.sum(xs)
     end
@@ -43,12 +43,12 @@ defmodule Eval do
   Traverse list until we get to a list where none of its elements is a list, in which
   case we evaluate it.
   """
-  def processList([h | [_|_] = t]) do
-    [h | processList(t)]
+  def processList([x | [_|_] = xs]) do
+    [x | processList(xs)]
   end
 
   def processList([x]) when is_list(x) do
-    [processList(x)]
+    [eval(processList(x))]
   end
 
   # Deepest list
