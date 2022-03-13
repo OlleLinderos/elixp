@@ -37,4 +37,22 @@ defmodule EvalTest do
   end
 
 
+  test "should multiply args" do
+    assert Eval.init(["*", 1, 2]) == 2 
+  end
+
+  test "should multiply nested args" do
+    assert Eval.init(["*", 1, 2, ["+", 3, 4]]) == 14 
+    assert Eval.init(["*", 1, 2, ["*", 3, 4]]) == 24 
+  end
+
+
+  test "should divide args" do
+    assert Eval.init(["/", 4, 2]) == 2
+    assert Eval.init(["/", 4, 2, 2]) == 1
+  end
+
+  test "should divide with nested args" do
+    assert Eval.init(["/", 4, ["/", 8, 2]]) == 1
+  end
 end
