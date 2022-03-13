@@ -32,15 +32,11 @@ defmodule Eval do
     eval(processList(x))
   end
 
-  def eval([x | xs]) do
-    case x do
-      "+" -> Enum.sum(xs)
-      "-" -> Enum.reduce(xs, fn z, acc -> acc - z end)
-      "*" -> Enum.reduce(xs, fn z, acc -> acc * z end)
-      "/" -> Enum.reduce(xs, fn z, acc -> acc / z end)
-      _ -> raise "x is not a valid operator"
-    end
-  end
+  def eval(["+" | xs]), do: Enum.sum(xs)
+  def eval(["-" | xs]), do: Enum.reduce(xs, fn z, acc -> acc - z end)
+  def eval(["*" | xs]), do: Enum.reduce(xs, fn z, acc -> acc * z end)
+  def eval(["/" | xs]), do: Enum.reduce(xs, fn z, acc -> acc / z end)
+  def eval([x | _]), do: raise x ++ " is not a valid operator"
 
 
   @doc """
