@@ -56,6 +56,12 @@ defmodule EvalTest do
   test "should return a linked list args as elements", do:
     assert Eval.init(["quote", 1, 2]) == [1, 2]
 
-  test "should return first element in list", do:
-    assert Eval.init(["car", ["quote", 8, 2]]) == 8
+  test "should return head element in list", do:
+    assert Eval.init(["car", ["quote", 1, 2]]) == 1
+    assert Eval.init(["car", ["quote", ["quote", 1, 2]]]) == [1, 2]
+
+  test "should return tail element in list", do:
+    assert Eval.init(["cdr", ["quote", 1, 2]]) == [2]
+    assert Eval.init(["cdr", ["quote", 1, 2, 3, 4]]) == [2, 3, 4]
+    assert Eval.init(["cdr", ["quote", 1, 2, ["quote", 3, 4], 5]]) == [2, [3, 4], 5]
 end

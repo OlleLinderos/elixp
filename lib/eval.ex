@@ -19,7 +19,7 @@ defmodule Eval do
 
   # We've reached a subtree, x is a list and xs is an empty list.
   # Its pattern will match the definition below next, and begin parsing anew.
-  def processList([x | xs]) when is_list(x),
+  def processList([x | xs]) when is_list(x) and is_list(xs),
     do: [eval(processList(x)) | xs]
 
   # Processing begins here, will call itself until x is a list
@@ -59,7 +59,7 @@ defmodule Eval do
   """
   def eval(["quote" | x]), do: x
   def eval(["car" | [[x | _]]]), do: x
-  def eval(["cdr" | [_ | xs]]), do: ["quote", xs]
+  def eval(["cdr" | [[_ | xs]]]), do: xs
 
   # Arithmetic operators
   def eval(["+" | xs]), do: Enum.sum(xs)
