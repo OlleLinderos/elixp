@@ -55,13 +55,23 @@ defmodule EvalTest do
   # Primitive operators
   test "should return a linked list args as elements", do:
     assert Eval.init(["quote", 1, 2]) == [1, 2]
+    # Let's sit on this one for a bit
+    # assert Eval.init(["quote", 1, ["+", 2, 3]]) == [1, ["quote", "+", 2, 3]]
 
-  test "should return head element in list", do:
+  test "should return true if arg is an atom, otherwise returns empty list" do
+    assert Eval.init(["atom", 1]) == true
+    assert Eval.init(["atom", ["quote"]]) == true
+    assert Eval.init(["atom", ["quote", 1, 2]]) == []
+  end
+
+  test "should return head element in list" do
     assert Eval.init(["car", ["quote", 1, 2]]) == 1
     assert Eval.init(["car", ["quote", ["quote", 1, 2]]]) == [1, 2]
-
-  test "should return tail element in list", do:
+  end
+  
+  test "should return tail element in list" do
     assert Eval.init(["cdr", ["quote", 1, 2]]) == [2]
     assert Eval.init(["cdr", ["quote", 1, 2, 3, 4]]) == [2, 3, 4]
     assert Eval.init(["cdr", ["quote", 1, 2, ["quote", 3, 4], 5]]) == [2, [3, 4], 5]
+  end
 end

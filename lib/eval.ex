@@ -58,7 +58,13 @@ defmodule Eval do
   Source: Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
   """
   def eval(["quote" | x]), do: x
+
+  def eval(["atom" | [_]]), do: true
+  def eval(["atom" | []]), do: true
+  def eval(["atom" | [[_|_]]]), do: []
+
   def eval(["car" | [[x | _]]]), do: x
+
   def eval(["cdr" | [[_ | xs]]]), do: xs
 
   # Arithmetic operators
