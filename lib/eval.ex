@@ -8,7 +8,8 @@ defmodule Eval do
 
   @doc """
   Traverse list until we get to a list where none of its elements is a list, in which
-  case we evaluate it. Probably incredibly inefficiently. This took 6 months to write.
+  case we evaluate it. Probably incredibly inefficiently. Writing this introduced me
+  to the Elixir debugger.
   """
   # This will match if both the head and the tail are nonempty lists, which
   # gives us the ability to carry the remainder of the current tree once we've
@@ -56,6 +57,9 @@ defmodule Eval do
 
   Source: Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
   """
+  def eval(["quote" | x]), do: x
+  def eval(["car" | [[x | _]]]), do: x
+  def eval(["cdr" | [_ | xs]]), do: ["quote", xs]
 
   # Arithmetic operators
   def eval(["+" | xs]), do: Enum.sum(xs)
@@ -64,5 +68,4 @@ defmodule Eval do
   def eval(["/" | xs]), do: Enum.reduce(xs, fn y, acc -> acc / y end)
   
   def eval([x | xs]), do: raise x <> " is not a valid operator given " <> xs <> " args"
-
 end

@@ -1,7 +1,9 @@
 defmodule Lexer do
-  @doc """
-  Turns strings into basic types.
+  @moduledoc """
+  Module for turning strings containing Lisp expressions into linked lists with Elixir basic types.
   """
+
+  @spec parseAtom(binary) :: binary | number
   def parseAtom(str) do
     if String.length(str) == 0, do: raise "Invalid string"
     s = String.trim(str)
@@ -22,30 +24,30 @@ defmodule Lexer do
 
   (car '(a b c)) => ["car", ["quote", "a", "b", "c"]]
   """
-  # List parsing begins here
+  # Parsing begins here
   def parseList(["(" | xs]), do: parseList([], xs)
 
-  # List parsing ends here
+  # Parsing ends here
   def parseList(acc, [")" | xs]), do: {Enum.reverse(acc), xs}
 
   # Create a new subtree where '(abc def) transforms into ["quote", "abc", "def"]
   def parseList(acc, ["'" | xs]) do
     {y, ys} = parseList([], List.delete_at(xs, 0))
     parseList([["quote" | y] | acc], ys)
-  end 
- 
+  end
+
   # Create a new subtree
   def parseList(acc, ["(" | xs]) do
     {y, ys} = parseList([], xs)
     parseList([y | acc], ys)
   end
 
-  # Parse atoms in list
+  # Parse atoms
   def parseList(acc, [x | xs]), do: parseList([parseAtom(x) | acc], xs)
 
 
   @doc """
-  Prepare string for parsing, by separating parens from adjacent symbols
+  Prepare string for parsing, by separating parens from adjacent symbols.
   """
   def parseInput(str) do
     s = String.trim(str)
@@ -66,6 +68,8 @@ defmodule Lexer do
     |> String.split()
   end
 
+
+  @spec parse(binary) :: list
   def parse(str) do
     {result, _} = str
     |> parseInput
