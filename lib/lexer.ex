@@ -1,4 +1,7 @@
 defmodule Lexer do
+  @doc """
+  Turns strings into basic types.
+  """
   def parseAtom(str) do
     if String.length(str) == 0, do: raise "Invalid string"
     s = String.trim(str)
@@ -13,15 +16,17 @@ defmodule Lexer do
     end
   end
 
-  # Parsing begins here
-  def parseList(["(" | xs]) do
-    parseList([], xs)
-  end
 
-  # Parsing ends here
-  def parseList(acc, [")" | xs]) do
-    {Enum.reverse(acc), xs}
-  end
+  @doc """
+  Takes a Lisp expression and turns it into a linked list.
+
+  (car '(a b c)) => ["car", ["quote", "a", "b", "c"]]
+  """
+  # List parsing begins here
+  def parseList(["(" | xs]), do: parseList([], xs)
+
+  # List parsing ends here
+  def parseList(acc, [")" | xs]), do: {Enum.reverse(acc), xs}
 
   # Create a new subtree where '(abc def) transforms into ["quote", "abc", "def"]
   def parseList(acc, ["'" | xs]) do
@@ -35,10 +40,13 @@ defmodule Lexer do
     parseList([y | acc], ys)
   end
 
-  def parseList(acc, [x | xs]) do
-    parseList([parseAtom(x) | acc], xs)
-  end 
+  # Parse atoms in list
+  def parseList(acc, [x | xs]), do: parseList([parseAtom(x) | acc], xs)
 
+
+  @doc """
+  Prepare string for parsing, by separating parens from adjacent symbols
+  """
   def parseInput(str) do
     s = String.trim(str)
 

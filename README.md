@@ -19,7 +19,6 @@ Start repl with `iex -S mix` and enter
 ```
 :debugger.start()
 :int.ni(Eval)
-:int.break(Eval, 51)
-Eval.eval(["+", 1, 2, ["+", 3, 4, ["+", 5, 6]]])
+:int.break(Eval, 17)
+Eval.init(["+", 1, 2, ["+", 3, 4], ["+", 5, 6], 7])
 ``` 
-

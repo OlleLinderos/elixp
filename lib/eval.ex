@@ -1,5 +1,35 @@
 defmodule Eval do
   @moduledoc """
+  Module for evaluation order, primitive and arithmetic operators.
+  """
+
+  def init(x), do: eval(processList(x))
+
+
+  @doc """
+  Traverse list until we get to a list where none of its elements is a list, in which
+  case we evaluate it. Probably incredibly inefficiently. This took 6 months to write.
+  """
+  # This will match if both the head and the tail are nonempty lists, which
+  # gives us the ability to carry the remainder of the current tree once we've
+  # encountered a subtree.
+  def processList([[_|_] = x | [_|_] = xs]),
+    do: [eval(processList(x)) | processList(xs)]
+
+  # We've reached a subtree, x is a list and xs is an empty list.
+  # Its pattern will match the definition below next, and begin parsing anew.
+  def processList([x | xs]) when is_list(x),
+    do: [eval(processList(x)) | xs]
+
+  # Processing begins here, will call itself until x is a list
+  def processList([x | [_|_] = xs]),
+    do: [x | processList(xs)]
+
+  # Processing ends here, x does not contain any lists
+  def processList([x]), do: [x]
+
+
+  @doc """
   Primitive operators
 
   (quote x) returns x. For readability we will abbreviate (quote x) as 'x.
@@ -24,37 +54,15 @@ defmodule Eval do
   the corresponding e expression is returned as the value of the whole cond
   expression.
 
-
   Source: Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
   """
 
-  def init(x) do
-    eval(processList(x))
-  end
-
+  # Arithmetic operators
   def eval(["+" | xs]), do: Enum.sum(xs)
-  def eval(["-" | xs]), do: Enum.reduce(xs, fn z, acc -> acc - z end)
-  def eval(["*" | xs]), do: Enum.reduce(xs, fn z, acc -> acc * z end)
-  def eval(["/" | xs]), do: Enum.reduce(xs, fn z, acc -> acc / z end)
-  def eval([x | _]), do: raise x ++ " is not a valid operator"
-
-
-  @doc """
-  Traverse list until we get to a list where none of its elements is a list, in which
-  case we evaluate it.
-  """
-  def processList([[_|_] = x | [_|_] = xs]) do
-    [eval(processList(x)) | processList(xs)]
-  end
-
-  def processList([x | xs]) when is_list(x) do
-    [eval(processList(x)) | xs]
-  end
+  def eval(["-" | xs]), do: Enum.reduce(xs, fn y, acc -> acc - y end)
+  def eval(["*" | xs]), do: Enum.reduce(xs, fn y, acc -> acc * y end)
+  def eval(["/" | xs]), do: Enum.reduce(xs, fn y, acc -> acc / y end)
   
-  def processList([x | [_|_] = xs]) do
-    [x | processList(xs)]
-  end
+  def eval([x | xs]), do: raise x <> " is not a valid operator given " <> xs <> " args"
 
-  # Deepest list
-  def processList([x]) do [x] end
 end
