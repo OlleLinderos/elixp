@@ -22,4 +22,19 @@ defmodule EvalTest do
   test "should return the sum of args, with multiple lists on same depth" do
     assert Eval.init(["+", ["+", 1], ["+", 2], ["+", 3]]) == 6 
   end
+
+
+  test "should subract from right to left" do
+    assert Eval.init(["-", 1, 2]) == -1
+  end
+
+  test "should subract with nested expressions" do
+    assert Eval.init(["-", 10, ["+", 2, 3]]) == 5
+  end
+
+  test "double negative?" do
+    assert Eval.init(["-", 10, ["-", 2, 3]]) == 11
+  end
+
+
 end

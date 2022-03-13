@@ -35,6 +35,7 @@ defmodule Eval do
   def eval([x | xs]) do
     case x do
       "+" -> Enum.sum(xs)
+      "-" -> Enum.reduce(xs, fn z, acc -> acc - z end)
       _ -> raise "x is not a valid operator"
     end
   end
