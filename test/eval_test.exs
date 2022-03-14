@@ -8,7 +8,7 @@ defmodule EvalTest do
 
 
   # Addition
-  test "should return the sum of args", do:
+  test "should return the sum of ", do:
     assert Eval.init(["+", 1, 2]) == 3
 
   test "should return the sum of args, with nested sum expressions", do:
@@ -93,5 +93,14 @@ defmodule EvalTest do
     assert Eval.init(["cdr", ["quote", 1, 2, ["quote", 3, 4], 5]]) == [2, [3, 4], 5]
 
     expect_failure(Eval.init(["cdr"]))
+  end
+
+  test "should insert first arg in beginning of second arg, which is a list" do
+    assert Eval.init(["cons", 1, ["quote", 2, 3, 4]]) == [1, 2, 3, 4]
+    assert Eval.init(["cons", "a", ["quote"]]) == ["a"]
+
+    expect_failure(Eval.init(["cons"]))
+    expect_failure(Eval.init(["cons", 1]))
+    expect_failure(Eval.init(["cons", 1, 1]))
   end
 end

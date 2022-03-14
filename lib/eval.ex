@@ -31,45 +31,45 @@ defmodule Eval do
 
 
   @doc """
-  Primitive operators
-
-  (quote x) returns x. For readability we will abbreviate (quote x) as 'x.
-
-  (atom x) returns the atom t if the value of x is an atom or the empty
-  list. Otherwise it returns (). In Lisp we conventionally use the atom t to
-  represent truth and the empty list to represent falsity.
-
-  (eq x y) returns t if the values of x and y are the same atom or both the
-  empty list, and () otherwise.
-
-  (car x) expects the value of x to be a list, and returns its first element.
-
-  (cdr x) expects the value of x to be a list, and returns everything after
-  the first element.
-
-  (cons x y) expects the value of y to be a list, and returns a list containing
-  the value of x followed by the elements of the value of y.
-
-  (cond (p_1 e_1) ... (p_n e_n)) is evaluated as follows. The p expressions are
-  evaluated in order until one returns t. When one is found the value of
-  the corresponding e expression is returned as the value of the whole cond
-  expression.
-
-  Source: Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
+  Evaluate primitive and arithmetic operators.
+  
+  Comments copied from Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
   """
+  # (quote x) returns x. For readability we will abbreviate (quote x) as 'x.
   def eval(["quote" | x]), do: x
 
+  # (atom x) returns the atom t if the value of x is an atom or the empty
+  # list. Otherwise it returns (). In Lisp we conventionally use the atom t to
+  # represent truth and the empty list to represent falsity.
   def eval(["atom"]), do: raise "(atom x) requires 1 parameter"
   def eval(["atom" | [[_|_]]]), do: []
   def eval(["atom" | _]), do: true
 
-  def eval(["eq" | [x | [_|_] = xs]]) do
-    if Enum.all?(xs, fn y -> y === x end), do: true, else: []
-  end
+  # (eq x y) returns t if the values of x and y are the same atom or both the
+  # empty list, and () otherwise.
+  def eval(["eq" | [x | [_|_] = xs]]),
+    do: if Enum.all?(xs, fn y -> y === x end), do: true, else: []
 
+  # (car x) expects the value of x to be a list, and returns its first element.
   def eval(["car" | [[x | _]]]), do: x
 
+  # (cdr x) expects the value of x to be a list, and returns everything after
+  # the first element.
   def eval(["cdr" | [[_ | xs]]]), do: xs
+
+  # (cons x y) expects the value of y to be a list, and returns a list containing
+  # the value of x followed by the elements of the value of y.
+  def eval(["cons" | [x | [xs]]]) when is_list(xs) do
+    [x | xs]
+  end
+
+  # (cond (p_1 e_1) ... (p_n e_n)) is evaluated as follows. The p expressions are
+  # evaluated in order until one returns t. When one is found the value of
+  # the corresponding e expression is returned as the value of the whole cond
+  # expression.
+  def eval(["cond" | [x | [] = xs]]) do
+    [x | xs]
+  end
 
   # Arithmetic operators
   def eval(["+" | xs]), do: Enum.sum(xs)
