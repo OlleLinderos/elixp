@@ -54,6 +54,7 @@ defmodule EvalTest do
 
   # Primitive operators
   test "should return a linked list args as elements", do:
+    assert Eval.init(["quote"]) == []
     assert Eval.init(["quote", 1, 2]) == [1, 2]
     # Let's sit on this one for a bit
     # assert Eval.init(["quote", 1, ["+", 2, 3]]) == [1, ["quote", "+", 2, 3]]
@@ -62,6 +63,8 @@ defmodule EvalTest do
     assert Eval.init(["atom", 1]) == true
     assert Eval.init(["atom", ["quote"]]) == true
     assert Eval.init(["atom", ["quote", 1, 2]]) == []
+
+    expect_failure(Eval.init(["atom"]))
   end
 
   test "should return true if parameters are equal, otherwise returns empty list" do
@@ -73,16 +76,22 @@ defmodule EvalTest do
     assert Eval.init(["eq", 1, ["quote"]]) == []
     assert Eval.init(["eq", 2, 1]) == []
     assert Eval.init(["eq", 1, 1, 2]) == []
+
+    expect_failure(Eval.init(["eq"]))
   end
 
   test "should return head element in list" do
     assert Eval.init(["car", ["quote", 1, 2]]) == 1
     assert Eval.init(["car", ["quote", ["quote", 1, 2]]]) == [1, 2]
+
+    expect_failure(Eval.init(["car"]))
   end
   
   test "should return tail element in list" do
     assert Eval.init(["cdr", ["quote", 1, 2]]) == [2]
     assert Eval.init(["cdr", ["quote", 1, 2, 3, 4]]) == [2, 3, 4]
     assert Eval.init(["cdr", ["quote", 1, 2, ["quote", 3, 4], 5]]) == [2, [3, 4], 5]
+
+    expect_failure(Eval.init(["cdr"]))
   end
 end

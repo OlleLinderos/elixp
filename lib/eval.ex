@@ -59,6 +59,7 @@ defmodule Eval do
   """
   def eval(["quote" | x]), do: x
 
+  def eval(["atom"]), do: raise "(atom x) requires 1 parameter"
   def eval(["atom" | [[_|_]]]), do: []
   def eval(["atom" | _]), do: true
 
