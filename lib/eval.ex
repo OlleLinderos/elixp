@@ -17,7 +17,7 @@ defmodule Eval do
   def processList([[_|_] = x | [_|_] = xs]),
     do: [eval(processList(x)) | processList(xs)]
 
-  # We've reached a subtree, x is a list and xs is an empty list.
+  # We've reached a list, x is a list and xs is an empty list.
   # Its pattern will match the definition below next, and begin parsing anew.
   def processList([x | xs]) when is_list(x) and is_list(xs),
     do: [eval(processList(x)) | xs]
@@ -59,9 +59,12 @@ defmodule Eval do
   """
   def eval(["quote" | x]), do: x
 
-  def eval(["atom" | [_]]), do: true
-  def eval(["atom" | []]), do: true
   def eval(["atom" | [[_|_]]]), do: []
+  def eval(["atom" | _]), do: true
+
+  def eval(["eq" | [x | [_|_] = xs]]) do
+    if Enum.all?(xs, fn y -> y === x end), do: true, else: []
+  end
 
   def eval(["car" | [[x | _]]]), do: x
 

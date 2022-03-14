@@ -64,6 +64,17 @@ defmodule EvalTest do
     assert Eval.init(["atom", ["quote", 1, 2]]) == []
   end
 
+  test "should return true if parameters are equal, otherwise returns empty list" do
+    assert Eval.init(["eq", 1, 1]) == true
+    assert Eval.init(["eq", 1, 1, 1]) == true
+    assert Eval.init(["eq", 1, 1, 1, 1]) == true
+    assert Eval.init(["eq", ["quote"], ["quote"]]) == true
+    assert Eval.init(["eq", ["quote", 1], ["quote", 1]]) == true # not sure if it should work this way
+    assert Eval.init(["eq", 1, ["quote"]]) == []
+    assert Eval.init(["eq", 2, 1]) == []
+    assert Eval.init(["eq", 1, 1, 2]) == []
+  end
+
   test "should return head element in list" do
     assert Eval.init(["car", ["quote", 1, 2]]) == 1
     assert Eval.init(["car", ["quote", ["quote", 1, 2]]]) == [1, 2]
