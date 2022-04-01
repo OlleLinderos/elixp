@@ -5,7 +5,6 @@ defmodule Eval do
 
   def init(x), do: eval(processList(x))
 
-
   @doc """
   Traverse list until we get to a list where none of its elements is a list, in which
   case we evaluate it. Probably incredibly inefficiently. Writing this introduced me
@@ -14,7 +13,7 @@ defmodule Eval do
   # This will match if both the head and the tail are nonempty lists, which
   # gives us the ability to carry the remainder of the current tree once we've
   # encountered a subtree.
-  def processList([[_|_] = x | [_|_] = xs]),
+  def processList([[_ | _] = x | [_ | _] = xs]),
     do: [eval(processList(x)) | processList(xs)]
 
   # We've reached a list, x is a list and xs is an empty list.
@@ -23,17 +22,16 @@ defmodule Eval do
     do: [eval(processList(x)) | xs]
 
   # Processing begins here, will call itself until x is a list
-  def processList([x | [_|_] = xs]),
+  def processList([x | [_ | _] = xs]),
     do: [x | processList(xs)]
 
   # Processing ends here, x does not contain any lists
   def processList([x]), do: [x]
 
-
   @doc """
   Evaluate primitive and arithmetic operators.
-  
-  Comments copied from Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
+
+  Comments below copied from Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
   """
   # (quote x) returns x. For readability we will abbreviate (quote x) as 'x.
   def eval(["quote" | x]), do: x
@@ -41,14 +39,14 @@ defmodule Eval do
   # (atom x) returns the atom t if the value of x is an atom or the empty
   # list. Otherwise it returns (). In Lisp we conventionally use the atom t to
   # represent truth and the empty list to represent falsity.
-  def eval(["atom"]), do: raise "(atom x) requires 1 parameter"
-  def eval(["atom" | [[_|_]]]), do: []
+  def eval(["atom"]), do: raise("(atom x) requires 1 parameter")
+  def eval(["atom" | [[_ | _]]]), do: []
   def eval(["atom" | _]), do: true
 
   # (eq x y) returns t if the values of x and y are the same atom or both the
   # empty list, and () otherwise.
-  def eval(["eq" | [x | [_|_] = xs]]),
-    do: if Enum.all?(xs, fn y -> y === x end), do: true, else: []
+  def eval(["eq" | [x | [_ | _] = xs]]),
+    do: if(Enum.all?(xs, fn y -> y === x end), do: true, else: [])
 
   # (car x) expects the value of x to be a list, and returns its first element.
   def eval(["car" | [[x | _]]]), do: x
@@ -67,8 +65,8 @@ defmodule Eval do
   # evaluated in order until one returns t. When one is found the value of
   # the corresponding e expression is returned as the value of the whole cond
   # expression.
-  def eval(["cond" | [x | [] = xs]]) do
-    [x | xs]
+  def eval(["cond" | x]) do
+    Enum.find(x, fn [y | [ys]] -> if y == true, do: ys end)
   end
 
   # Arithmetic operators
@@ -76,6 +74,6 @@ defmodule Eval do
   def eval(["-" | xs]), do: Enum.reduce(xs, fn y, acc -> acc - y end)
   def eval(["*" | xs]), do: Enum.reduce(xs, fn y, acc -> acc * y end)
   def eval(["/" | xs]), do: Enum.reduce(xs, fn y, acc -> acc / y end)
-  
-  def eval([x | xs]), do: raise x <> " is not a valid operator given " <> xs <> " args"
+
+  def eval([x]), do: x
 end
