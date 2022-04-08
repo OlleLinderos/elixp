@@ -31,7 +31,7 @@ defmodule Eval do
   @doc """
   Evaluate primitive and arithmetic operators.
 
-  Comments below copied from Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
+  Definitions below copied from Roots of Lisp, Paul Graham http://languagelog.ldc.upenn.edu/myl/llog/jmc.pdf
   """
   # (quote x) returns x. For readability we will abbreviate (quote x) as 'x.
   def eval(["quote" | x]), do: x
@@ -66,7 +66,7 @@ defmodule Eval do
   # the corresponding e expression is returned as the value of the whole cond
   # expression.
   def eval(["cond" | x]) do
-    Enum.find(x, fn [y | [ys]] -> if y == true, do: ys end)
+    Enum.find_value(x, fn [y | [ys]] -> if y == true, do: ys end)
   end
 
   # Arithmetic operators
@@ -75,5 +75,5 @@ defmodule Eval do
   def eval(["*" | xs]), do: Enum.reduce(xs, fn y, acc -> acc * y end)
   def eval(["/" | xs]), do: Enum.reduce(xs, fn y, acc -> acc / y end)
 
-  def eval([x]), do: x
+  def eval(x), do: x
 end

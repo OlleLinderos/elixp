@@ -37,7 +37,7 @@ defmodule Lexer do
     parseList([["quote" | y] | acc], ys)
   end
 
-  # Create a new subtree
+  # Create a new list
   def parseList(acc, ["(" | xs]) do
     {y, ys} = parseList([], xs)
     parseList([y | acc], ys)

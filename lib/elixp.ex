@@ -3,7 +3,5 @@ defmodule Elixp do
     input
     |> Lexer.parse()
     |> Eval.init()
-    |> inspect
-    |> IO.puts()
   end
 end
