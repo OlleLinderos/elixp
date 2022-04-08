@@ -46,7 +46,7 @@ defmodule Eval do
   # (eq x y) returns t if the values of x and y are the same atom or both the
   # empty list, and () otherwise.
   def eval(["eq" | [x | [_ | _] = xs]]),
-    do: if(Enum.all?(xs, fn y -> y === x end), do: true, else: [])
+    do: if(Enum.all?(xs, &(&1 === x)), do: true, else: [])
 
   # (car x) expects the value of x to be a list, and returns its first element.
   def eval(["car" | [[x | _]]]), do: x
@@ -71,9 +71,9 @@ defmodule Eval do
 
   # Arithmetic operators
   def eval(["+" | xs]), do: Enum.sum(xs)
-  def eval(["-" | xs]), do: Enum.reduce(xs, fn y, acc -> acc - y end)
-  def eval(["*" | xs]), do: Enum.reduce(xs, fn y, acc -> acc * y end)
-  def eval(["/" | xs]), do: Enum.reduce(xs, fn y, acc -> acc / y end)
+  def eval(["-" | xs]), do: Enum.reduce(xs, &(&2 - &1))
+  def eval(["*" | xs]), do: Enum.reduce(xs, &(&2 * &1))
+  def eval(["/" | xs]), do: Enum.reduce(xs, &(&2 / &1))
 
   def eval(x), do: x
 end
