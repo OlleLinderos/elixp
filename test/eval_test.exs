@@ -74,11 +74,13 @@ defmodule EvalTest do
   test "should return tail element in list" do
     assert Eval.init(["cdr", ["quote", 1, 2]]) == [2]
     assert Eval.init(["cdr", ["quote", 1, 2, 3, 4]]) == [2, 3, 4]
+    assert Eval.init(["cdr", ["quote", "a", 2, "c", 4]]) == [2, "c", 4]
     assert Eval.init(["cdr", ["quote", 1, 2, ["quote", 3, 4], 5]]) == [2, [3, 4], 5]
   end
 
   test "should insert first arg in beginning of second arg, which is a list" do
     assert Eval.init(["cons", 1, ["quote", 2, 3, 4]]) == [1, 2, 3, 4]
+    assert Eval.init(["cons", 1, [2]]) == [1, 2]
     assert Eval.init(["cons", "a", ["quote"]]) == ["a"]
   end
 
@@ -86,5 +88,15 @@ defmodule EvalTest do
     assert Eval.init(["cond", [["eq", 1, 1], 1], [["eq", 1, 2], 2]]) == 1
     assert Eval.init(["cond", [false, 1], [true, 2]]) == 2
     assert Eval.init(["cond", [false, 1], [true, ["quote", 1, 2, 3]], [true, 2]]) == [1, 2, 3]
+  end
+
+  test "should insert the first argument into the following function" do
+    assert Eval.init(["lambda", [1], ["cons", [2]]]) == [1, 2]
+    assert Eval.init(["lambda", [[1, 2, 3]], ["cons", ["quote", 4]]]) == [[1, 2, 3], 4]
+    assert Eval.init(["lambda", [true], ["eq", true]]) == true
+  end
+
+  test "should pass the second argument into the lambda function" do
+    assert Eval.init([["lambda", ["cons", [2]]], 1]) == [1, 2]
   end
 end

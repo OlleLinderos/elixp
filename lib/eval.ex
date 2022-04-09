@@ -57,16 +57,24 @@ defmodule Eval do
 
   # (cons x y) expects the value of y to be a list, and returns a list containing
   # the value of x followed by the elements of the value of y.
-  def eval(["cons" | [x | [xs]]]) when is_list(xs) do
-    [x | xs]
-  end
+  def eval(["cons" | [x | [xs]]]) when is_list(xs), do: [x | xs]
 
-  # (cond (p_1 e_1) ... (p_n e_n)) is evaluated as follows. The p expressions are
+  # (cond (p1 e1) ... (pn en)) is evaluated as follows. The p expressions are
   # evaluated in order until one returns t. When one is found the value of
   # the corresponding e expression is returned as the value of the whole cond
   # expression.
-  def eval(["cond" | x]) do
-    Enum.find_value(x, fn [y | [ys]] -> if y == true, do: ys end)
+  def eval(["cond" | x]),
+    do: Enum.find_value(x, fn [y | [ys]] -> if y == true, do: ys end)
+
+
+  # ((lambda (p1 ... pn) e) a1 ... an) where p1 ... pn are atoms called parameters and e is
+  # an expression.
+  def eval([["lambda" | [x]] | [y]]), do: eval(List.insert_at(x, 1, y))
+
+  def eval(["lambda" | [[x] | xs]]) do
+    Enum.find_index(xs, fn [y] -> y == x end)
+    |> (&List.replace_at(xs, &1, x)).()
+    |> eval
   end
 
   # Arithmetic operators
